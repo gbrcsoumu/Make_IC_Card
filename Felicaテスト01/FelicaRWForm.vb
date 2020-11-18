@@ -336,7 +336,7 @@ Public Class FelicaRWForm
         'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
         'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
 
-        Sql_Command = "SELECT ""所属センター"" FROM """ + MemberNameTable + """ ORDER BY ""所属センター"""
+        Sql_Command = "SELECT ""所属センター"" FROM """ + MemberNameTable2 + """ ORDER BY ""所属センター"""
         tb = db.ExecuteSql(Sql_Command)
         n = tb.Rows.Count
         If n > 0 Then
@@ -457,6 +457,8 @@ Public Class FelicaRWForm
         'db.Disconnect()
         'Me.ComboBox1.SelectedIndex = 0
         'Me.ComboBox1.Refresh()
+
+        Me.CenterToScreen()
     End Sub
 
 
@@ -625,7 +627,7 @@ Public Class FelicaRWForm
             'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
             'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
 
-            Sql_Command = "SELECT ""所属部"" FROM """ + MemberNameTable + """ WHERE ""所属センター"" = '" & A & "' ORDER BY ""所属部"""
+            Sql_Command = "SELECT ""所属部"" FROM """ + MemberNameTable2 + """ WHERE ""所属センター"" = '" & A & "' ORDER BY ""所属部"""
             tb = db.ExecuteSql(Sql_Command)
             n = tb.Rows.Count
             If n > 0 Then
@@ -669,7 +671,7 @@ Public Class FelicaRWForm
             'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
             'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
 
-            Sql_Command = "SELECT ""所属室"" FROM """ + MemberNameTable + """ WHERE ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' ORDER BY ""所属室"""
+            Sql_Command = "SELECT ""所属室"" FROM """ + MemberNameTable2 + """ WHERE ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' ORDER BY ""所属室"""
             tb = db.ExecuteSql(Sql_Command)
             n = tb.Rows.Count
             If n > 0 Then
@@ -714,7 +716,20 @@ Public Class FelicaRWForm
         If A <> "" And B <> "" And C <> "" Then
             db.Connect()
 
-            Sql_Command = "SELECT * FROM """ + MemberNameTable + """ WHERE ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "' ORDER BY ""職員番号"""
+            Dim Year1 As String = Date.Now.Year.ToString
+            Dim Month1 As String = Date.Now.Month.ToString
+            Dim M2 As Integer = Integer.Parse(Month1) + 1
+            If M2 > 12 Then M2 = 1
+            Dim Month2 As String = M2.ToString
+            Month1 = ("0" + Month1).Substring(Month1.Length - 1, 2)
+            Month2 = ("0" + Month2).Substring(Month2.Length - 1, 2)
+
+            Dim Day1 As String = "{" + Month1 + "/01/" + Year1 + "}"
+            Dim period As String = " (""異動日前日"" > " + Day1 + "AND ""異動日"" <= " + Day1 + ")"
+
+            Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE " + period + " AND ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "'" + " ORDER BY ""職員番号"""
+
+            'Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "' ORDER BY ""職員番号"""
             tb = db.ExecuteSql(Sql_Command)
             Dim n As Integer = tb.Rows.Count
             If n > 0 Then
@@ -861,7 +876,26 @@ Public Class FelicaRWForm
 
             db.Connect()
 
-            Sql_Command = "SELECT * FROM """ + MemberNameTable + """ WHERE ""氏名"" LIKE '%" + A + "%' ORDER BY ""氏名"""
+
+            Dim Year1 As String = Date.Now.Year.ToString
+            Dim Month1 As String = Date.Now.Month.ToString
+            Dim M2 As Integer = Integer.Parse(Month1) + 1
+            If M2 > 12 Then M2 = 1
+            Dim Month2 As String = M2.ToString
+            Month1 = ("0" + Month1).Substring(Month1.Length - 1, 2)
+            Month2 = ("0" + Month2).Substring(Month2.Length - 1, 2)
+
+            Dim Day1 As String = "{" + Month1 + "/01/" + Year1 + "}"
+            Dim period As String = " (""異動日前日"" > " + Day1 + "AND ""異動日"" <= " + Day1 + ")"
+
+            'Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE " + period + " AND ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "'" + " ORDER BY ""職員番号"""
+
+            Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE " + period + " AND ""氏名"" LIKE '%" + A + "%' ORDER BY ""氏名"""
+
+
+
+
+            'Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE ""氏名"" LIKE '%" + A + "%' ORDER BY ""氏名"""
             tb = db.ExecuteSql(Sql_Command)
             Dim n As Integer = tb.Rows.Count
             If n > 0 Then
