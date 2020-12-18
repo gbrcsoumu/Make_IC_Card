@@ -702,8 +702,8 @@ Public Class FelicaRWForm
 
     Private Sub ComboBox4_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox4.SelectedIndexChanged
         Dim db As New OdbcDbIf
-        Dim tb As DataTable
-        Dim Sql_Command As String
+        Dim tb As DataTable, tb2 As DataTable
+        Dim Sql_Command As String, Sql_Command2 As String, Idm2 As String = ""
         Dim i As Integer
         'Dim n As Integer
         Dim A As String, B As String, C As String
@@ -737,12 +737,18 @@ Public Class FelicaRWForm
                 'Me.ComboBox1.Items.Clear()
                 For i = 0 To n - 1
                     No(i) = tb.Rows(i).Item("職員番号").ToString()
+                    Sql_Command2 = "SELECT Idm FROM """ + MemberNameTable + """ WHERE ""職員番号"" = '" + No(i) + "'"
+                    tb2 = db.ExecuteSql(Sql_Command2)
+                    Dim n2 As Integer = tb2.Rows.Count
+                    If n2 > 0 Then
+                        Idm2 = tb2.Rows(0).Item("IDm").ToString()
+                    End If
                     Name1(i) = tb.Rows(i).Item("氏名").ToString()
                     Affiliation1(i) = tb.Rows(i).Item("所属センター").ToString()
                     Affiliation2(i) = tb.Rows(i).Item("所属部").ToString()
                     Affiliation3(i) = tb.Rows(i).Item("所属室").ToString()
                     Post(i) = tb.Rows(i).Item("役職").ToString()
-                    IDm(i) = tb.Rows(i).Item("IDm").ToString()
+                    IDm(i) = Idm2
                 Next
             End If
 
@@ -804,6 +810,10 @@ Public Class FelicaRWForm
                     Sql_Command = "UPDATE """ + MemberNameTable + """ SET IDm = '" + Me.IDm(data_n) + "' WHERE ""職員番号"" = '" + Me.No(data_n) + "'"
 
                     tb = db.ExecuteSql(Sql_Command)
+
+                    'Sql_Command = "UPDATE """ + MemberNameTable2 + """ SET IDm = '" + Me.IDm(data_n) + "' WHERE ""職員番号"" = '" + Me.No(data_n) + "'"
+
+                    'tb = db.ExecuteSql(Sql_Command)
 
                     'UPDATE " 従業員名簿 " SET " 給与 " =32000, " 控除 " =1 WHERE " 従業員番号 " = 'E10001'
 
