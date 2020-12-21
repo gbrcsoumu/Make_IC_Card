@@ -626,7 +626,7 @@ Public Class FelicaRWForm
             db.Connect()
 
 
-            Dim period As String = " ""異動日前日"" >= CURDATE AND ""異動日"" <= CURDATE "
+            Dim period As String = " ""異動日前日"" >= CURRENT_DATE AND ""異動日"" <= CURRENT_DATE "
 
             Sql_Command = "SELECT ""職員番号"",""氏名"",""所属センター"",""所属部"",""所属室"",""役職"" FROM "
             Sql_Command += """" + MemberNameTable2 + """ WHERE " + period + " AND ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "'" + " ORDER BY ""職員番号"""
