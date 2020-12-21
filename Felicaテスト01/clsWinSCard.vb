@@ -1287,7 +1287,7 @@ Public Class clsWinSCard
     '======================
     Public Function makeCardKey() As Boolean
         Dim ID As Byte() = New Byte(0) {}
-        Dim IDlen As Integer
+        'Dim IDlen As Integer
         '------------------
         ' プロパティ初期化
         '------------------

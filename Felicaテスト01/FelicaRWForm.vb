@@ -252,7 +252,7 @@ Public Class FelicaRWForm
         ' Felicaにデータの書き込み
         '------------------------------------
         Dim adr As Int16, chrlen As Integer
-        Dim chr As Byte()
+        Dim chr As Byte() = {0, 0}
         adr = dic(Me.ComboBox1.Text)
         If Me.TextBox1.Text <> "" Then
             chrlen = Len(Me.TextBox1.Text)
@@ -303,38 +303,38 @@ Public Class FelicaRWForm
 
         Dim n As Integer
 
-        LoginID = ""
-        LoginPassWord = ""
+
 
         ' ログインダイアログの表示
 
         Dim res As DialogResult
-        Dim f1 As New LoginForm1
-        res = f1.ShowDialog()
-        f1.Dispose()
-        If res = System.Windows.Forms.DialogResult.Cancel Then
-            ' CANCELされた場合は閉じる。
-            Me.Close()
-            Exit Sub
-        End If
 
+        Do
+            LoginID = ""
+            LoginPassWord = ""
+            Dim f1 As New LoginForm1
+            res = f1.ShowDialog()
+            f1.Dispose()
+            If res = System.Windows.Forms.DialogResult.Cancel Then
+                ' CANCELされた場合は終了する。
+                Me.Close()
+                Exit Sub
+            End If
+
+            Try
+                db.Connect(DataBaseName, LoginID, LoginPassWord, -1)
+                Exit Do
+
+            Catch ex As Exception
+                MsgBox("ID又はパスワードが違います。")
+                'Me.Close()
+                db.Disconnect()
+                'Exit Sub
+            End Try
+        Loop
 
         Me.Width = 1000     ' フォームんの幅を設定
         Me.Height = 600     ' フォームんの高さを設定
-
-        Try
-            db.Connect(DataBaseName, LoginID, LoginPassWord, -1)
-
-        Catch ex As Exception
-            MsgBox("ID又はパスワードが違います。")
-            Me.Close()
-            db.Disconnect()
-            Exit Sub
-        End Try
-
-
-        'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-        'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
 
         Sql_Command = "SELECT ""所属センター"" FROM """ + MemberNameTable2 + """ ORDER BY ""所属センター"""
         tb = db.ExecuteSql(Sql_Command)
@@ -351,22 +351,7 @@ Public Class FelicaRWForm
         For Each s In Me.kind1
             Me.ComboBox2.Items.Add(s)
         Next
-        'Sql_Command = "SELECT * FROM ""職員一覧"""
-        'tb = db.ExecuteSql(Sql_Command)
-        'Dim n As Integer = tb.Rows.Count
-        'If n > 0 Then
-        '    ReDim No(n - 1), Name(n - 1), Affiliation1(n - 1), Affiliation2(n - 1), Affiliation3(n - 1), Post(n - 1), IDm(n - 1)
-        '    Me.ComboBox1.Items.Clear()
-        '    For i = 0 To n - 1
-        '        No(i) = tb.Rows(i).Item("職員番号").ToString()
-        '        Name(i) = tb.Rows(i).Item("氏名").ToString()
-        '        Affiliation1(i) = tb.Rows(i).Item("所属センター").ToString()
-        '        Affiliation2(i) = tb.Rows(i).Item("所属部").ToString()
-        '        Affiliation3(i) = tb.Rows(i).Item("所属室").ToString()
-        '        Post(i) = tb.Rows(i).Item("役職").ToString()
-        '        IDm(i) = tb.Rows(i).Item("IDm").ToString()
-        '    Next
-        'End If
+
         db.Disconnect()
         tb.Dispose()
 
@@ -411,12 +396,6 @@ Public Class FelicaRWForm
             .Columns(4).Width = C_width
             .Columns(5).Width = C_width
             .Columns(6).Width = C_width * 1.5
-            '                    .Columns(5).Width = C_width
-
-            'For i = 0 To n - 1
-            '    Row = {No(i), Name(i), Affiliation1(i), Affiliation2(i), Affiliation3(i), Post(i), IDm(i)}
-            '    .Rows.Add(Row)
-            'Next
 
             'DataGridViewButtonColumnの作成
             Dim column As New DataGridViewButtonColumn()
@@ -428,74 +407,10 @@ Public Class FelicaRWForm
             'DataGridViewに追加する
             .Columns.Add(column)
         End With
-        'Dim column1 As New DataGridViewCheckBoxColumn
-        'DataGridView1.Columns.Add(column1)
-        'DataGridView1.Columns(5).Name = "風向"
-        'DataGridView1.Columns(5).Width = C_width / 2
-
-        'Dim column2 As New DataGridViewCheckBoxColumn
-        'DataGridView1.Columns.Add(column2)
-        'DataGridView1.Columns(6).Name = "風速"
-        'DataGridView1.Columns(6).Width = C_width / 2
-
-
-        'day1 = Now
-        'day2 = day1.AddDays(-60)
-        'day3 = "'" & Format(day2.Date, "yyyy-MM-dd") & "'"
-
-        'db.Connect()
-        ''Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-        ''Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-        'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-        'tb = db.ExecuteSql(Sql_Command)
-
-        'Me.ComboBox1.Items.Clear()
-        'For i = 0 To tb.Rows.Count - 1
-        '    Me.ComboBox1.Items.Add(tb.Rows(i).Item("ID").ToString() & ":" & _
-        '                           tb.Rows(i).Item("依頼者名").ToString())
-        'Next
-        'db.Disconnect()
-        'Me.ComboBox1.SelectedIndex = 0
-        'Me.ComboBox1.Refresh()
 
         Me.CenterToScreen()
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-    '    ' define the local key and vector byte arrays
-    '    Dim key() As Byte = _
-    '      {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, _
-    '      15, 16, 17, 18, 19, 20, 21, 22, 23, 24}
-    '    Dim iv() As Byte = {8, 7, 6, 5, 4, 3, 2, 1}
-
-    '    ' instantiate the class with the arrays
-    '    Dim des As New cTripleDES(key, iv)
-
-    '    ' for the example, define a variable with the encrypted value
-    '    Dim encryptedData As String = "++XIiGymvbg="
-
-    '    ' now, decrypt the data
-    '    Dim decryptedData As String = des.Decrypt(encryptedData)
-
-    '    ' the value of decryptedData should be "test",
-    '    ' but for our example purposes, let's re-encrypt it
-    '    Dim newEncryptedData As String = des.Encrypt(decryptedData)
-    'End Sub
 
     Private Sub CkWriteBtn_Click(sender As Object, e As EventArgs) Handles CkWriteBtn.Click
         Me.txtMessage.Text = ""
@@ -624,9 +539,6 @@ Public Class FelicaRWForm
         If A <> "" Then
             db.Connect()
 
-            'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-            'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-
             Sql_Command = "SELECT ""所属部"" FROM """ + MemberNameTable2 + """ WHERE ""所属センター"" = '" & A & "' ORDER BY ""所属部"""
             tb = db.ExecuteSql(Sql_Command)
             n = tb.Rows.Count
@@ -667,9 +579,6 @@ Public Class FelicaRWForm
 
         If A <> "" And B <> "" Then
             db.Connect()
-
-            'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H%%%%%%%%%%') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
-            'Sql_Command = "SELECT ID,""試験名称"",""依頼者名"" FROM ""見積書"" WHERE (ID LIKE 'H29:001-001') AND (""見積作成日"">= DATE" & day3 & ") ORDER BY ""見積作成日"" DESC"
 
             Sql_Command = "SELECT ""所属室"" FROM """ + MemberNameTable2 + """ WHERE ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' ORDER BY ""所属室"""
             tb = db.ExecuteSql(Sql_Command)
@@ -716,20 +625,12 @@ Public Class FelicaRWForm
         If A <> "" And B <> "" And C <> "" Then
             db.Connect()
 
-            Dim Year1 As String = Date.Now.Year.ToString
-            Dim Month1 As String = Date.Now.Month.ToString
-            Dim M2 As Integer = Integer.Parse(Month1) + 1
-            If M2 > 12 Then M2 = 1
-            Dim Month2 As String = M2.ToString
-            Month1 = ("0" + Month1).Substring(Month1.Length - 1, 2)
-            Month2 = ("0" + Month2).Substring(Month2.Length - 1, 2)
 
-            Dim Day1 As String = "{" + Month1 + "/01/" + Year1 + "}"
-            Dim period As String = " (""異動日前日"" > " + Day1 + "AND ""異動日"" <= " + Day1 + ")"
+            Dim period As String = " ""異動日前日"" >= CURDATE AND ""異動日"" <= CURDATE "
 
-            Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE " + period + " AND ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "'" + " ORDER BY ""職員番号"""
+            Sql_Command = "SELECT ""職員番号"",""氏名"",""所属センター"",""所属部"",""所属室"",""役職"" FROM "
+            Sql_Command += """" + MemberNameTable2 + """ WHERE " + period + " AND ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "'" + " ORDER BY ""職員番号"""
 
-            'Sql_Command = "SELECT * FROM """ + MemberNameTable2 + """ WHERE ""所属センター"" = '" + A + "' AND ""所属部"" = '" + B + "' AND ""所属室"" = '" + C + "' ORDER BY ""職員番号"""
             tb = db.ExecuteSql(Sql_Command)
             Dim n As Integer = tb.Rows.Count
             If n > 0 Then
@@ -737,7 +638,7 @@ Public Class FelicaRWForm
                 'Me.ComboBox1.Items.Clear()
                 For i = 0 To n - 1
                     No(i) = tb.Rows(i).Item("職員番号").ToString()
-                    Sql_Command2 = "SELECT Idm FROM """ + MemberNameTable + """ WHERE ""職員番号"" = '" + No(i) + "'"
+                    Sql_Command2 = "SELECT IDm FROM """ + MemberNameTable + """ WHERE ""職員番号"" = '" + No(i) + "'"
                     tb2 = db.ExecuteSql(Sql_Command2)
                     Dim n2 As Integer = tb2.Rows.Count
                     If n2 > 0 Then
@@ -798,10 +699,10 @@ Public Class FelicaRWForm
                     Dim db As New OdbcDbIf
                     Dim tb As DataTable
                     Dim Sql_Command As String
-                    Dim i As Integer
+                    'Dim i As Integer
                     'Dim n As Integer
                     Dim A As String, B As String, C As String
-                    Dim Row() As String
+                    'Dim Row() As String
 
                     db.Connect()
 
