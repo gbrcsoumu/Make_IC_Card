@@ -317,7 +317,9 @@ Public Class FelicaRWForm
             f1.Dispose()
             If res = System.Windows.Forms.DialogResult.Cancel Then
                 ' CANCELされた場合は終了する。
+
                 Me.Close()
+
                 Exit Sub
             End If
 

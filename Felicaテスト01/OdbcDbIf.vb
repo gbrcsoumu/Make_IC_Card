@@ -141,7 +141,10 @@ Public Class OdbcDbIf
     ''' 
     ''' 
     Protected Overrides Sub Finalize()
-        Disconnect()
+        Try
+            Disconnect()
+        Catch
+        End Try
         MyBase.Finalize()
     End Sub
 End Class
